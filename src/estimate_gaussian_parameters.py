@@ -31,7 +31,7 @@ class GaussianEstimation:
 
         lower_bound, upper_bound = self._calculate_confidence_intervals(mean_across_years, std_dev_across_years, confidence_level)
 
-        gaussian_predictions = self._create_gaussian_dataset(lower_bound, mean_across_years, upper_bound, CI=True)
+        gaussian_predictions = self._create_gaussian_dataset(lower_bound, mean_across_years, upper_bound)
         
         # Save model with confidence_interval predictions in self.model_with_CI
         self.model_with_CI = gaussian_predictions
