@@ -39,7 +39,8 @@ class TimeFormatConverter:
         return new_dataset
 
     def convert_time_format(self, lead_time=None, variable=None):
-        print("debug start")
+        print("debug start for convert_time_format")
+        print(f"variable: {variable}")
         datetime_values = pd.date_range(start='2020-01-01', end='2020-12-31T18:00:00', freq='6H')
         one_year_in_ns = np.timedelta64(int(365 * 24 * 60 * 60 * 1e9), 'ns')
         lead_time = np.timedelta64(int(lead_time * 365 * 24 * 60 * 60 * 1e9), 'ns') if lead_time else one_year_in_ns
@@ -70,12 +71,7 @@ class TimeFormatConverter:
         self.predictions_model = new_dataset
         return self.predictions_model
 
-    def _update_dataset_attributes(self, dataset, variable=None):
-        dataset['time'].attrs.update({'long_name': 'initial time of forecast', 'standard_name': 'forecast_reference_time'})
-        if variable:
-            dataset[variable].attrs.update({'long_name': 'Geopotential', 'short_name': 'z', 'standard_name': 'geopotential', 'units': 'm**2 s**-2'})
-
-    def save_as_zarr(self, name, variable):
+    def save_as_zarr(self, model, name, variable):
         """
         Save the given dataset as a Zarr file.
 
@@ -84,5 +80,11 @@ class TimeFormatConverter:
         - name (str): Name of the file.
         - variable (str): Variable name to be used in the file path.
         """
-        zarr_file_path = f'/Users/davidhuang/Downloads/Probabilistic-Weather-Forecasting-/models/{variable}/{name}.zarr'
-        self.predictions_model.to_zarr(zarr_file_path, mode='w')
+        zarr_file_path = f'/Users/davidhuang/Desktop/Weather-Research /Probabilistic-Weather-Forecasting-/models/{name}/CI-Predictions/{variable}.zarr'
+        print(model)
+        model.to_zarr(zarr_file_path, mode='w')
+
+    def _update_dataset_attributes(self, dataset, variable=None):
+        dataset['time'].attrs.update({'long_name': 'initial time of forecast', 'standard_name': 'forecast_reference_time'})
+        if variable:
+            dataset[variable].attrs.update({'long_name': 'Geopotential', 'short_name': 'z', 'standard_name': 'geopotential', 'units': 'm**2 s**-2'})

@@ -24,11 +24,14 @@ class GaussianEstimation:
         return gaussian_predictions if not simplified else mean_across_years.rename({'dayofyear': 'time'})
 
     # Gaussian confidence interval estimation
-    def estimate_gaussian_confidence_intervals(self, data, confidence_level=0.95):
-        mean_across_years, std_dev_across_years = self._calculate_mean_std_dev(data)
+    def estimate_gaussian_confidence_intervals(self, confidence_level=0.95):
+        self._validate_forecast_probabilities()
+
+        mean_across_years, std_dev_across_years = self._calculate_mean_std_dev(self.forecast_probabilities)
+
         lower_bound, upper_bound = self._calculate_confidence_intervals(mean_across_years, std_dev_across_years, confidence_level)
 
-        gaussian_predictions = self._create_gaussian_dataset(lower_bound, mean_across_years, upper_bound)
+        gaussian_predictions = self._create_gaussian_dataset(lower_bound, mean_across_years, upper_bound, CI=True)
         
         # Save model with confidence_interval predictions in self.model_with_CI
         self.model_with_CI = gaussian_predictions
@@ -62,6 +65,8 @@ class GaussianEstimation:
             lower_bound = samples
             gaussian_predictions = xr.merge([gaussian_predictions, {"geopotential_upper": upper_bound}])
             gaussian_predictions = xr.merge([gaussian_predictions, {"geopotential_lower": lower_bound}])
+            print("inner loop")
+            print(gaussian_predictions)
             return gaussian_predictions.rename({'dayofyear': 'time'})
         
         geopotential_predictions = xr.DataArray(samples, dims=mean_across_years.dims, coords=mean_across_years.coords, name='geopotential_predictions')

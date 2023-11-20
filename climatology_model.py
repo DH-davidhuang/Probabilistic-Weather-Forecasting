@@ -75,4 +75,4 @@ class ClimatologyProbabilisticModel:
                 print(f"end cycle: {counter}")
                 counter += 1
                 
-            self.forecast_probabilities = forecast_probabilities #  # Result of the climatology model computation
+            self.forecast_probabilities = forecast_probabilities # Result of creating climatology model computation
