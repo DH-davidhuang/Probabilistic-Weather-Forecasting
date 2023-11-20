@@ -1,0 +1,180 @@
+{
+    "metadata": {
+        ".zattrs": {},
+        ".zgroup": {
+            "zarr_format": 2
+        },
+        "geopotential/.zarray": {
+            "chunks": [
+                1,
+                366,
+                4,
+                16,
+                8
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<f8",
+            "fill_value": "NaN",
+            "filters": null,
+            "order": "C",
+            "shape": [
+                1,
+                1464,
+                13,
+                64,
+                32
+            ],
+            "zarr_format": 2
+        },
+        "geopotential/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "prediction_timedelta",
+                "time",
+                "level",
+                "longitude",
+                "latitude"
+            ],
+            "long_name": "Geopotential",
+            "short_name": "z",
+            "standard_name": "geopotential",
+            "units": "m**2 s**-2"
+        },
+        "latitude/.zarray": {
+            "chunks": [
+                32
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<f8",
+            "fill_value": "NaN",
+            "filters": null,
+            "order": "C",
+            "shape": [
+                32
+            ],
+            "zarr_format": 2
+        },
+        "latitude/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "latitude"
+            ]
+        },
+        "level/.zarray": {
+            "chunks": [
+                13
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<i8",
+            "fill_value": null,
+            "filters": null,
+            "order": "C",
+            "shape": [
+                13
+            ],
+            "zarr_format": 2
+        },
+        "level/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "level"
+            ]
+        },
+        "longitude/.zarray": {
+            "chunks": [
+                64
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<f8",
+            "fill_value": "NaN",
+            "filters": null,
+            "order": "C",
+            "shape": [
+                64
+            ],
+            "zarr_format": 2
+        },
+        "longitude/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "longitude"
+            ]
+        },
+        "prediction_timedelta/.zarray": {
+            "chunks": [
+                1
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<i8",
+            "fill_value": null,
+            "filters": null,
+            "order": "C",
+            "shape": [
+                1
+            ],
+            "zarr_format": 2
+        },
+        "prediction_timedelta/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "prediction_timedelta"
+            ],
+            "units": "days"
+        },
+        "time/.zarray": {
+            "chunks": [
+                1464
+            ],
+            "compressor": {
+                "blocksize": 0,
+                "clevel": 5,
+                "cname": "lz4",
+                "id": "blosc",
+                "shuffle": 1
+            },
+            "dtype": "<i8",
+            "fill_value": null,
+            "filters": null,
+            "order": "C",
+            "shape": [
+                1464
+            ],
+            "zarr_format": 2
+        },
+        "time/.zattrs": {
+            "_ARRAY_DIMENSIONS": [
+                "time"
+            ],
+            "calendar": "proleptic_gregorian",
+            "long_name": "initial time of forecast",
+            "standard_name": "forecast_reference_time",
+            "units": "hours since 2020-01-01 00:00:00"
+        }
+    },
+    "zarr_consolidated_format": 1
+}
