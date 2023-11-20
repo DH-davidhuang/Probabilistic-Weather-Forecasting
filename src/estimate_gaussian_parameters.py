@@ -10,7 +10,7 @@ class GaussianEstimation:
         self.model_with_CI = None
 
     # Gaussian parameter estimation
-    def estimate_gaussian_parameters(self, simplified=False):
+    def estimate_gaussian_parameters(self, simplified=False, variance_calibration=None):
         self._validate_forecast_probabilities()
         mean_across_years, std_dev_across_years = self._calculate_mean_std_dev()
 
@@ -24,7 +24,7 @@ class GaussianEstimation:
         return gaussian_predictions if not simplified else mean_across_years.rename({'dayofyear': 'time'})
 
     # Gaussian confidence interval estimation
-    def estimate_gaussian_confidence_intervals(self, confidence_level=0.95):
+    def estimate_gaussian_confidence_intervals(self, confidence_level=0.95, variance_calibration= None):
         self._validate_forecast_probabilities()
 
         mean_across_years, std_dev_across_years = self._calculate_mean_std_dev(self.forecast_probabilities)
@@ -42,9 +42,12 @@ class GaussianEstimation:
         if self.forecast_probabilities is None:
             raise ValueError("Forecast probabilities not computed. Provide a valid dataset.")
 
-    def _calculate_mean_std_dev(self, data=None):
+    def _calculate_mean_std_dev(self, variance_calibration=None, data=None):
         data = data if data is not None else self.forecast_probabilities
-        return data.mean(dim='years'), data.std(dim='years')
+        if variance_calibration is not None:
+            return data.mean(dim='years'), data.std(dim='years') * (variance_calibration**0.5)
+        else:
+            return data.mean(dim='years'), data.std(dim='years')
 
     def _calculate_confidence_intervals(self, mean, std_dev, confidence_level):
         z_score = norm.ppf(1 - (1 - confidence_level) / 2)
@@ -61,12 +64,13 @@ class GaussianEstimation:
                 'latitude': ('latitude', mean_across_years.latitude.values),
             }
         )
-        CI = True if upper_bound else False
+        CI = False
+        if upper_bound is not None:
+            CI = True
         if CI and upper_bound is not None:
             lower_bound = samples
             gaussian_predictions = xr.merge([gaussian_predictions, {"geopotential_upper": upper_bound}])
             gaussian_predictions = xr.merge([gaussian_predictions, {"geopotential_lower": lower_bound}])
-            print("inner loop")
             print(gaussian_predictions)
             return gaussian_predictions.rename({'dayofyear': 'time'})
         
