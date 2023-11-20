@@ -13,7 +13,7 @@ class ClimatologyProbabilisticModel:
         self.weather_var = weather_variable
         self.forecast_probabilities = None
 
-    def climatology_model(self):
+    def create_climatology_model(self):
         """
         Create a probabilistic climatology model based on daily means for a range of years.
         """

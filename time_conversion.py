@@ -86,8 +86,3 @@ class TimeFormatConverter:
         """
         zarr_file_path = f'/Users/davidhuang/Downloads/Probabilistic-Weather-Forecasting-/models/{variable}/{name}.zarr'
         self.predictions_model.to_zarr(zarr_file_path, mode='w')
-
-# Usage example
-converter = TimeFormatConverter(dataset)
-new_dataset_intervals = converter.convert_time_format_for_intervals(lead_time=1, variable='geopotential')
-new_dataset = converter.convert_time_format(lead_time=1, variable='geopotential')
