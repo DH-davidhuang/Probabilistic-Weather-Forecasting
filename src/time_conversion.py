@@ -31,7 +31,8 @@ class TimeFormatConverter:
 
             day_of_year = date.dayofyear
             # TODO: This might be a faster operation: new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}]
-            new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].sel(time=day_of_year, method="nearest")
+            #new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].sel(time=day_of_year, method="nearest")
+            new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}]
             new_dataset["geopotential_lower"].loc[date] = self.predictions_model["geopotential_lower"].sel(time=day_of_year, method="nearest")
 
         new_dataset = new_dataset.expand_dims(prediction_timedelta=[lead_time])
