@@ -4,7 +4,7 @@
 #GPU=0
 
 # Activate Conda environment (if needed)
-source activate weather-research
+# source activate Weather-Research
 
 # Set other parameters if needed
 OBS_PATH='gs://weatherbench2/datasets/era5/1959-2022-6h-64x32_equiangular_with_poles_conservative.zarr'
@@ -16,9 +16,9 @@ CONFIDENCE_INTERVALS=true
 
 # Set CUDA device
 #export CUDA_VISIBLE_DEVICES=$GPU
-
+echo "Training Model."
 # Run the Python script
-python -u "/Users/davidhuang/Desktop/Weather-Research /Probabilistic-Weather-Forecasting-/src/main.py" \
+python -u "/Users/davidhuang/Desktop/Weather-Research /Probabilistic-Weather-Forecasting/src/main.py" \
     --obs_path "$OBS_PATH" \
     --start_year $START_YEAR \
     --end_year $END_YEAR \
