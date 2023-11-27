@@ -10,7 +10,6 @@ class TimeFormatConverter:
         datetime_values = pd.date_range(start='2020-01-01', end='2020-12-31T18:00:00', freq='6H')
         one_year_in_ns = np.timedelta64(int(365 * 24 * 60 * 60 * 1e9), 'ns')
         lead_time = np.timedelta64(int(lead_time * 365 * 24 * 60 * 60 * 1e9), 'ns') if lead_time else one_year_in_ns
-        print(self.predictions_model)
         new_dataset = xr.Dataset(
             coords={
                 'time': datetime_values,
@@ -20,9 +19,29 @@ class TimeFormatConverter:
                 'latitude': self.predictions_model['latitude']
             }
         )
+        new_dataset["geopotential_upper"] = xr.DataArray(
+            dims=("time", "level", "longitude", "latitude"),
+            coords={
+                "time": datetime_values,
+                'prediction_timedelta': lead_time,
+                "level": self.predictions_model['level'],      
+                "longitude": self.predictions_model['longitude'],  
+                "latitude": self.predictions_model['latitude']  
+                },
+        )
 
-        new_dataset["geopotential_upper"] = xr.DataArray(np.nan, dims=("time", "level", "longitude", "latitude"), coords=new_dataset.coords)
-        new_dataset["geopotential_lower"] = xr.DataArray(np.nan, dims=("time", "level", "longitude", "latitude"), coords=new_dataset.coords)
+        new_dataset["geopotential_lower"] = xr.DataArray(
+            dims=("time", "level", "longitude", "latitude"),
+            coords={
+                "time": datetime_values,
+                'prediction_timedelta': lead_time,
+                "level": self.predictions_model['level'],       
+                "longitude": self.predictions_model['longitude'],
+                "latitude": self.predictions_model['latitude']   
+                },
+        )
+        # new_dataset["geopotential_upper"] = xr.DataArray(np.nan, dims=("time", "level", "longitude", "latitude"), coords=new_dataset.coords)
+        # new_dataset["geopotential_lower"] = xr.DataArray(np.nan, dims=("time", "level", "longitude", "latitude"), coords=new_dataset.coords)
         
         tracker = 0 
         for date in datetime_values:
@@ -31,9 +50,14 @@ class TimeFormatConverter:
 
             day_of_year = date.dayofyear
             # TODO: This might be a faster operation: new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}]
-            #new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].sel(time=day_of_year, method="nearest")
-            new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}]
-            new_dataset["geopotential_lower"].loc[date] = self.predictions_model["geopotential_lower"].sel(time=day_of_year, method="nearest")
+            # new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].sel(time=day_of_year, method="nearest")
+            # new_dataset["geopotential_upper"].loc[{'time': date}] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}].values
+            # new_dataset["geopotential_lower"].loc[date] = self.predictions_model["geopotential_lower"].sel(time=day_of_year, method="nearest")
+            new_dataset["geopotential_upper"].loc[{'time': date}] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}].values
+            new_dataset["geopotential_lower"].loc[{'time': date}] = self.predictions_model["geopotential_lower"].loc[{'time': day_of_year}].values
+            # print(self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}])
+            #new_dataset["geopotential_upper"].loc[date] = self.predictions_model["geopotential_upper"].loc[{'time': day_of_year}]
+            #new_dataset["geopotential_lower"].loc[date] = self.predictions_model["geopotential_lower"].loc[{'time': day_of_year}]
 
         new_dataset = new_dataset.expand_dims(prediction_timedelta=[lead_time])
         self._update_dataset_attributes(new_dataset)

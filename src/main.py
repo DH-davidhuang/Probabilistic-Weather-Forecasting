@@ -21,21 +21,26 @@ def main():
     args = parser.parse_args()
     obs_path = 'gs://weatherbench2/datasets/era5/1959-2022-6h-64x32_equiangular_with_poles_conservative.zarr'
     obs_data = xr.open_zarr(args.obs_path)
+    means_model = ClimatologyProbabilisticModel(obs_data, args.start_year, args.end_year, weather_variable=args.weather_variable)
+    means_model.create_climatology_model()
     if args.probabilistic:
-        means_model = ClimatologyProbabilisticModel(obs_data, args.start_year, args.end_year, weather_variable=args.weather_variable)
-        means_model.create_climatology_model()
         probability_model = GaussianEstimation(means_model.forecast_probabilities)
         if args.confidence_intervals:
             probability_model.estimate_gaussian_confidence_intervals()
-            finalized_model = TimeFormatConverter(probability_model.model_with_CI)
+            finalized_model = TimeFormatConverter(probability_model.probabilistic_model_with_CI)
             finalized_model.convert_time_format_for_intervals(variable=args.weather_variable)
             evaluation = ClimatologyModelEvaluation(finalized_model.predictions_model)
-            score = evaluation.calculate_proportion_of_ones()
+            score = evaluation.calculate_proportion_of_ones() # Percentage of times Confidence Interval is Correct 
             print(score)
         else:
             probability_model.estimate_gaussian_parameters()
-            finalized_model = TimeFormatConverter(probability_model.model)
+            finalized_model = TimeFormatConverter(probability_model.probabilistic_model)
             finalized_model.convert_time_format(variable=args.weather_variable)
+    else: 
+        model = GaussianEstimation(means_model.forecast_probabilities, simplified=True)
+        model.estimate_gaussian_parameters()
+        finalized_model = TimeFormatConverter(model.simple_model)
+        finalized_model.convert_time_format(variable=args.weather_variable)
     name = f"{args.start_year}-{args.end_year}"
     finalized_model.save_as_zarr(finalized_model.predictions_model, name, f"{args.weather_variable}")
 
