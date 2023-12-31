@@ -32,7 +32,7 @@ class GaussianEstimation:
     # Gaussian confidence interval estimation
     def estimate_gaussian_confidence_intervals(self, confidence_level=0.95, variance_calibration= None):
         self._validate_forecast_probabilities()
-        mean_across_years, std_dev_across_years = self._calculate_mean_std_dev(data=self.forecast_probabilities)
+        mean_across_years, std_dev_across_years = self._calculate_mean_std_dev(variance_calibration=1.07020737, data=self.forecast_probabilities)
 
         lower_bound, upper_bound = self._calculate_confidence_intervals(mean_across_years, std_dev_across_years, confidence_level)
 

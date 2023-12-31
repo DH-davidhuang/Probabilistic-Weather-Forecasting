@@ -61,6 +61,7 @@ class TimeFormatConverter:
 
         new_dataset = new_dataset.expand_dims(prediction_timedelta=[lead_time])
         self._update_dataset_attributes(new_dataset)
+        self.predictions_model = new_dataset
         return new_dataset
 
     def convert_time_format(self, lead_time=None, variable=None):
@@ -98,7 +99,7 @@ class TimeFormatConverter:
         - name (str): Name of the file.
         - variable (str): Variable name to be used in the file path.
         """
-        zarr_file_path = f'/Users/davidhuang/Desktop/Weather-Research /Probabilistic-Weather-Forecasting-/models/{name}/CI-Predictions/{variable}.zarr'
+        zarr_file_path = f'/home/davidhuang/Probabilistic-Weather-Forecasting/models/CI-Predictions-{name}-{variable}.zarr'
         print(model)
         model.to_zarr(zarr_file_path, mode='w')
 
