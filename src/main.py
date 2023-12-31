@@ -4,6 +4,7 @@ from estimate_gaussian_parameters import GaussianEstimation
 from time_conversion import TimeFormatConverter
 import xarray as xr
 import argparse
+import gather_results
 
 
 def main():
@@ -43,6 +44,7 @@ def main():
         model.estimate_gaussian_parameters()
         finalized_model = TimeFormatConverter(model.simple_model)
         finalized_model.convert_time_format(variable=args.weather_variable)
+
     name = f"{args.start_year}-{args.end_year}"
     finalized_model.save_as_zarr(finalized_model.predictions_model, name, f"{args.weather_variable}")
 
