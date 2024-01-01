@@ -99,7 +99,7 @@ class TimeFormatConverter:
         - name (str): Name of the file.
         - variable (str): Variable name to be used in the file path.
         """
-        zarr_file_path = f'/home/davidhuang/Probabilistic-Weather-Forecasting/models/CI-Predictions-{name}-{variable}.zarr'
+        zarr_file_path = f'/home/davidhuang/Probabilistic-Weather-Forecasting/{name}-{variable}.zarr'
         print(model)
         model.to_zarr(zarr_file_path, mode='w')
 

@@ -6,6 +6,9 @@ from estimate_gaussian_parameters import GaussianEstimation
 from time_conversion import TimeFormatConverter
 import xarray as xr
 import argparse
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 def main():
 
@@ -25,11 +28,32 @@ def main():
     # Calculate the percentage of times Confidence Interval is Correct
     # confidence_interval_scores = climatology_metrics.calculate_proportion_of_ones(observations=args.model_path, test_year=args.test_year)
     metrics = ClimatologyModelEvaluation(model)
-    anomaly_correlation_scores = metrics.ACC(obs_data, args.test_year)
-    root_mean_square_errors = metrics.RMSE(obs_data, args.test_year)
-    anomaly_correlation_scores.sel(level=500).plot(label='ACC Scores')
-    root_mean_square_errors.sel(level=500).plot(label='RMSE Loss Curves')
-    
+    anomaly_correlation_scores_level, acc_scores = metrics.ACC(obs_data, args.test_year)
+    rmse_levels, rmse_score = metrics.RMSE(obs_data, args.test_year)
+    #anomaly_correlation_scores.sel(level=500).plot(label='ACC Scores')
+    print(rmse_levels.dims)
+    plt.figure(figsize=(8, 6))  # Adjust figure size if needed
+    rmse_levels.plot(label='RMSE Loss Curves')
+    plt.xlabel('Levels')
+    plt.ylabel('RMSE')
+    plt.title('RMSE vs. Levels')
+    plt.legend()
+    plt.grid(True)  # Add grid lines if desired
+    plt.savefig('rmse_plot.png', dpi=300, bbox_inches='tight')
+    plt.close()  # Close the RMSE figure to start a new one
+
+    # Plot ACC
+    plt.figure(figsize=(8, 6))  # Adjust figure size if needed
+    anomaly_correlation_scores_level.plot(label='ACC Loss Curves')
+    plt.xlabel('Levels')
+    plt.ylabel('ACC')
+    plt.title('ACC vs. Levels')
+    plt.legend()
+    plt.grid(True)  # Add grid lines if desired
+    plt.savefig('acc_plot.png', dpi=300, bbox_inches='tight')
+    plt.close()  # Close the ACC figure to end the plotting
+
+
     # Print the result
     #print(confidence_interval_scores)
 

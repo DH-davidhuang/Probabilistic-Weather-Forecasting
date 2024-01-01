@@ -14,11 +14,18 @@ def main():
     parser.add_argument('--start_year', type=int, required=True, help='Start year for the model')
     parser.add_argument('--end_year', type=int, required=True, help='End year for the model')
     parser.add_argument('--weather_variable', type=str, required=True, help='Weather variable to be used')
-    parser.add_argument('--probabilistic', type=bool, required=True, help='If Climatology model is Probabilistic')
-    parser.add_argument('--confidence_intervals', type=bool, required=True, help='If Climatology model has Confidence Intervals')
+    parser.add_argument('--probabilistic', action='store_true', required=False, help='If Climatology model is Probabilistic')
+    parser.add_argument('--confidence_intervals',action='store_true', required=False, help='If Climatology model has Confidence Intervals')
     parser.add_argument('--test_year', type=int, required=True, help='Test Year for Evaluation Metrics')
-
-
+    args = parser.parse_args()
+    if args.probabilistic:
+        print("true")
+        print(args.confidence_intervals)
+        if args.confidence_intervals == True:
+            print("true ci")
+        else:
+            print("false ci")
+    return None
 
     args = parser.parse_args()
 
@@ -26,6 +33,7 @@ def main():
     obs_data = xr.open_zarr(args.obs_path)
     means_model = ClimatologyProbabilisticModel(obs_data, args.start_year, args.end_year, weather_variable=args.weather_variable)
     means_model.create_climatology_model()
+    
     if args.probabilistic:
         probability_model = GaussianEstimation(means_model.forecast_probabilities)
         if args.confidence_intervals:

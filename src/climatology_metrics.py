@@ -25,9 +25,23 @@ class ClimatologyModelEvaluation:
     def RMSE(self, observations, test_year):
         next_year = test_year + 1
         ground_truth = observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01')).values[:1464] 
+        forecasts = self.model_output["geopotential"]
+
+        dims = ('levels',)
+        levels = observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01')).level.values
+        data = np.zeros(len(levels))  
+        rmse = xr.DataArray(data, dims=dims, coords={'levels': levels})
+
+
+        for i, level in enumerate(levels):
+            level_prediction = forecasts.sel(level=level).values
+            ground_level_prediction = observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01'), level=level).values[:1464] 
+            error = np.sqrt(np.sum((ground_level_prediction - level_prediction)**2))
+            rmse.loc[{'levels': level}] = error 
+
         predictions = self.model_output["geopotential"].values[0]
-        rmse = np.sqrt(np.sum((ground_truth - predictions)**2))
-        return rmse
+        rmse_score = np.sqrt(np.sum((ground_truth - predictions)**2))
+        return rmse, rmse_score
 
     def ACC(self, observations, test_year):
         """
@@ -47,12 +61,36 @@ class ClimatologyModelEvaluation:
         covariance = np.mean(obs_anomalies * model_anomalies)
         
         if obs_std > 0 and model_std > 0:
-            acc = covariance / (obs_std * model_std)
+            acc_score = covariance / (obs_std * model_std)
         else:
             # Handle the case where either standard deviation is zero
-            acc = 0.0
+            acc_score = 0.0
         
-        return acc
+        dims = ('levels',)
+        levels = observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01')).level.values
+        data = np.zeros(len(levels))  
+        acc = xr.DataArray(data, dims=dims, coords={'levels': levels})
+
+        for i, level in enumerate(levels):
+            # Extract the observed geopotential anomalies for the test year
+            obs_anomalies_level = observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01'), level=level).values[:1464] - observations["geopotential"].sel(time=slice(f'{test_year}-01-01', f'{next_year}-01-01'), level=level).mean(dim="time").values
+
+            # Extract the predicted geopotential anomalies (assuming your model_output contains anomalies)
+            model_anomalies_level = self.model_output["geopotential"].sel(level=level).values - self.model_output["geopotential"].sel(level=level).mean(dim="time").values
+
+            # Calculate the ACC
+            obs_std = np.std(obs_anomalies_level)
+            model_std = np.std(model_anomalies_level)
+            covariance = np.mean(obs_anomalies_level * model_anomalies_level)
+            
+            if obs_std > 0 and model_std > 0:
+                acc_score = covariance / (obs_std * model_std)
+            else:
+                # Handle the case where either standard deviation is zero
+                acc_score = 0.0
+            acc.loc[{'levels': level}] = acc_score
+
+        return acc, acc_score
     
     def weather_bench_metrics(self, observations_path, model_path):
         climatology_path = 'gs://weatherbench2/datasets/era5-hourly-climatology/1990-2019_6h_64x32_equiangular_with_poles_conservative.zarr'
